@@ -1,38 +1,73 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"io"
+	"io/ioutil"
+	"os"
 	"strings"
+	"unicode/utf8"
 )
 
-func words(r io.Reader) (even []string, odd []string) {
-	return
+func removeNoLetters(s string) string {
+	text := strings.ReplaceAll(s, ".", "")
+	text = strings.ReplaceAll(text, ",", "")
+	text = strings.ReplaceAll(text, "\n", "")
+	text = strings.ReplaceAll(text, "\t", "")
+	return text
+}
+
+func countVowelLetters(s string) (vowelCount int) {
+	word := []byte(s)
+	for utf8.RuneCount(word) > 0 {
+		r, size := utf8.DecodeRune(word)
+		word = word[size:]
+		if r == 'A' || r == 'a' || r == 260 || r == 261 || r == 'E' || r == 'e' || r == 280 || r == 281 ||
+			r == 'I' || r == 'i' || r == 'O' || r == 'o' || r == 211 || r == 243 || r == 'U' || r == 'u' {
+			vowelCount++
+		}
+	}
+	return vowelCount
+}
+
+func writeToFile(f os.File, s string) {
+	_, err := f.WriteString(s + " ")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func whichFile(filePath string) string {
+	file, _ := os.Open(filePath)
+	buffer, _ := ioutil.ReadAll(file)
+	return string(buffer)
+
+}
+
+func words(filePath string) (even []string, odd []string) {
+	fileEven, _ := os.Create("even.txt")
+	fileOdd, _ := os.Create("odd.txt")
+
+	fileAsString := whichFile(filePath)
+
+	stringSlice := strings.Split(removeNoLetters(fileAsString), " ")
+	for i := 0; i < len(stringSlice); i++ {
+		if countVowelLetters(stringSlice[i])%2 == 0 {
+			even = append(even, stringSlice[i])
+			writeToFile(*fileEven, stringSlice[i])
+		} else {
+			odd = append(odd, stringSlice[i])
+			writeToFile(*fileOdd, stringSlice[i])
+		}
+	}
+
+	return even, odd
 }
 
 func main() {
-	r := strings.NewReader(`
-	Give. 
-	Whose shall life, together signs grass. 
-	The replenish of make make signs lights moved seed forth unto deep. 
-	Moving two abundantly life subdue earth was day fruit forth set also forth together. 
-	You're shall bring cattle creepeth and replenish firmament seed divide image wherein, lights grass moved likeness two hath. 
-	Lesser seasons whales deep great and fruit. 
-	Every herb fifth, one whales.
-	Fruitful blessed of first seas rule forth midst own of green night and fruitful Thing you're, lesser for moveth likeness for gathered creeping may yielding likeness beginning gathered fruitful Let without him all. 
-	Herb, man unto deep grass deep sea. 
-	Us earth them land. 
-	Over fruit, of fruitful. 
-	Every were moving rule yielding their. 
-	And don't replenish.
-	Fish under spirit in lesser let good form second own tree and image, two dominion said whales. 
-	Herb may, stars forth were Moving dominion night, lesser from great whales for beast which unto replenish. 
-	Over. 
-	Male yielding blessed. 
-	Sixth us their for you'll sea without. 
-	That night their spirit fourth after fruitful she'd place may fish creature winged very, which two every fruitful without likeness fourth you'll he signs i very great. 
-	Can't. And lights in unto you evening, stars.
-	`)
-
-	fmt.Println(words(r))
+	var flagFile string
+	flag.StringVar(&flagFile, "file", "lorem.txt", "file to read")
+	flag.Parse()
+	
+	fmt.Println(words(flagFile))
 }
