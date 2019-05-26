@@ -68,11 +68,11 @@ func main() {
 
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadByte()
-		if text == 'y' {
+		input, _ := reader.ReadByte()
+		if input == 'y' {
 			load = true
 			break
-		} else if text == 'n' {
+		} else if input == 'n' {
 			load = false
 			break
 		} else {
