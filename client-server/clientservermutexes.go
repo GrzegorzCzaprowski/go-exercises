@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -49,14 +52,41 @@ func (db Database) Get(w http.ResponseWriter, req *http.Request) {
 	db.m.Unlock()
 }
 
+func saveToFile(db Database, number int) {
+
+	for {
+		time.Sleep(time.Duration(number) * time.Second)
+		file, _ := json.MarshalIndent(db, "", " ")
+		_ = ioutil.WriteFile("database.json", file, 0644)
+	}
+}
+
 func main() {
+	println("do you want to load database? y/n")
+
+	var load bool
+
 	db := new(Database)
 	db.Users = make(map[uint64]User)
+
+	if load {
+
+	} else {
+
+	}
 	router := mux.NewRouter()
 
 	router.HandleFunc("/users/", db.Set).Methods("POST")
 	router.HandleFunc("/users/{id}/", db.Delete).Methods("DELETE")
 	router.HandleFunc("/users/{id}/", db.Get).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	var flagServerAddress string
+	flag.StringVar(&flagServerAddress, "addr", ":8000", "server address")
+	var flagSavingDatabaseInterval int
+	flag.IntVar(&flagSavingDatabaseInterval, "save", 5, "time beetween saves in seconds")
+	flag.Parse()
+
+	go saveToFile(*db, flagSavingDatabaseInterval)
+
+	log.Fatal(http.ListenAndServe(flagServerAddress, router))
 }
