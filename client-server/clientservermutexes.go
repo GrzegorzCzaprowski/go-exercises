@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -53,7 +55,6 @@ func (db Database) Get(w http.ResponseWriter, req *http.Request) {
 }
 
 func saveToFile(db Database, number int) {
-
 	for {
 		time.Sleep(time.Duration(number) * time.Second)
 		file, _ := json.MarshalIndent(db, "", " ")
@@ -62,17 +63,30 @@ func saveToFile(db Database, number int) {
 }
 
 func main() {
+	var load bool
 	println("do you want to load database? y/n")
 
-	var load bool
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadByte()
+		if text == 'y' {
+			load = true
+			break
+		} else if text == 'n' {
+			load = false
+			break
+		} else {
+			println("wrong character, try again")
+		}
+	}
 
 	db := new(Database)
 	db.Users = make(map[uint64]User)
 
 	if load {
-
-	} else {
-
+		data, _ := ioutil.ReadFile("database.json")
+		db = &Database{}
+		_ = json.Unmarshal([]byte(data), &db)
 	}
 	router := mux.NewRouter()
 
