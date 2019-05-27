@@ -40,7 +40,8 @@ func (db Database) Delete(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	id, _ := strconv.ParseUint(params["id"], 0, 64)
 	db.m.Lock()
-	db.Users[id] = User{}
+	delete(db.Users, id)
+	//db.Users[id] = User{}
 	//rozmiar mapy nie zmieni sie, skasowany user zostanie zastąpiony pustym userem
 	json.NewEncoder(w).Encode(db.Users)
 	db.m.Unlock()
@@ -84,6 +85,8 @@ func main() {
 	db.Users = make(map[uint64]User)
 
 	if load {
+		{
+		}
 		data, _ := ioutil.ReadFile("database.json")
 		db = &Database{}
 		_ = json.Unmarshal([]byte(data), &db)

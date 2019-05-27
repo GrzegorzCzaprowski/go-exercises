@@ -21,13 +21,13 @@ type User struct {
 }
 
 func postUser(user User, address string) {
+	var url strings.Builder
+	url.WriteString(address)
+	url.WriteString("/users/")
 
-	//user := User{1, "asdsa", "asdsa", "asd"} //stworzenie mapy danych
 	jsonValue, _ := json.Marshal(user) //zamiana danych na forma jsona
-
 	//zbuforowanie jasona do bytów
-	response, err := http.Post("http://localhost:8000/users/", "aplication/json", bytes.NewBuffer(jsonValue))
-
+	response, err := http.Post(url.String(), "aplication/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -36,29 +36,45 @@ func postUser(user User, address string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	log.Println(string(body))
-
 }
 
-func deleteUser(id uint64) {
-
+func deleteUser(id uint64, address string) {
 	var url strings.Builder
+	url.WriteString(address)
+	url.WriteString("/users/")
+	url.WriteString(strconv.FormatUint(id, 10))
+	url.WriteString("/")
+	println(url.String())
 
-	request, _ := http.NewRequest("DELETE", url, nil)
+	client := &http.Client{}
 
+	req, _ := http.NewRequest("DELETE", url.String(), nil)
+
+	response, _ := client.Do(req)
+	defer response.Body.Close()
+}
+
+func getUser(id uint64, address string) {
+	var url strings.Builder
+	url.WriteString(address)
+	url.WriteString("/users/")
+	url.WriteString(strconv.FormatUint(id, 10))
+	url.WriteString("/")
+
+	response, _ := http.Get(url.String())
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println(string(body))
 }
 
 func main() {
 	var flagServerAddress string
-	flag.StringVar(&flagServerAddress, "addr", ":8000", "server address")
+	flag.StringVar(&flagServerAddress, "addr", "http://localhost:8000", "server address")
 	flag.Parse()
-
-	url := flagServerAddress sadas +{
-	var url strings.Builder
-	url.WriteString(urlFlag)
-	url.WriteString("/users/")
-	println(url.String())
 
 	for {
 		println("choose action")
@@ -96,12 +112,14 @@ func main() {
 
 			postUser(user, flagServerAddress)
 		} else if command[0] == "delete" {
+			userID, _ := strconv.ParseUint(command[1], 10, 64)
+			deleteUser(userID, flagServerAddress)
+		} else if command[0] == "getuser" {
 			println("weszlo")
+			userID, _ := strconv.ParseUint(command[1], 10, 64)
+			getUser(userID, flagServerAddress)
+		} else {
+			println("bad command")
 		}
-
 	}
-
-	//deleteUser()
-	// getUser()
-
 }
