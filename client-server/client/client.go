@@ -68,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	for {
-		println("choose action")
+		fmt.Println("choose action")
 		reader := bufio.NewReader(os.Stdin)
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimRight(input, "\r\n")
@@ -76,30 +76,30 @@ func main() {
 		if command[0] == "adduser" {
 			var user User
 
-			print("enter ID (uint64): ")
+			fmt.Print("enter ID (uint64): ")
 			input, _ := reader.ReadString('\n')
 			input = strings.TrimRight(input, "\r\n")
 			i, _ := strconv.ParseUint(input, 0, 64)
 			user.ID = i
-			println(user.ID)
+			fmt.Println(user.ID)
 
-			print("enter Name (string): ")
+			fmt.Print("enter Name (string): ")
 			input, _ = reader.ReadString('\n')
 			input = strings.TrimRight(input, "\r\n")
 			user.Name = input
-			println(user.Name)
+			fmt.Println(user.Name)
 
-			print("enter Surname (string): ")
+			fmt.Print("enter Surname (string): ")
 			input, _ = reader.ReadString('\n')
 			input = strings.TrimRight(input, "\r\n")
 			user.Surname = input
-			println(user.Surname)
+			fmt.Println(user.Surname)
 
-			print("enter Email (string): ")
+			fmt.Print("enter Email (string): ")
 			input, _ = reader.ReadString('\n')
 			input = strings.TrimRight(input, "\r\n")
 			user.Email = input
-			println(user.Email)
+			fmt.Println(user.Email)
 
 			postUser(user, flagServerAddress)
 		} else if command[0] == "delete" {
@@ -109,7 +109,7 @@ func main() {
 			userID, _ := strconv.ParseUint(command[1], 10, 64)
 			getUser(userID, flagServerAddress)
 		} else {
-			println("bad command")
+			fmt.Println("bad command")
 		}
 	}
 }
