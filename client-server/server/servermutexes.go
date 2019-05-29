@@ -1,44 +1,45 @@
 package main
 
+//errory obługujemy w handlerach gorutynach i mainie
 import (
-	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"zadanka/go-exercises/client-server/server/database"
 
 	"github.com/gorilla/mux"
 )
 
-func main() {
-	var load bool
-	fmt.Println("do you want to load database? y/n")
-
+func loadDatabase() bool {
 	for {
-		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadByte()
-		if input == 'y' {
-			load = true
-			break
-		} else if input == 'n' {
-			load = false
-			break
+		var input string
+		fmt.Scan(&input)
+		if input == "y" {
+			return true
+		} else if input == "n" {
+			return false
 		} else {
-			println("wrong character, try again")
+			fmt.Println("wrong character, try again")
 		}
 	}
+}
+
+func main() {
+	fmt.Println("do you want to load database? y/n")
 
 	db := new(database.Database)
 	db.Users = make(map[uint64]database.User)
 
-	if load {
-		data, _ := ioutil.ReadFile("database.json")
+	if loadDatabase() {
+		data, err := ioutil.ReadFile("database.json")
+		if err != nil {
+			log.Println("Error: cant load database from file!")
+		}
 		db = &database.Database{}
-		_ = json.Unmarshal([]byte(data), &db)
+		json.Unmarshal([]byte(data), &db)
 	}
 	router := mux.NewRouter()
 

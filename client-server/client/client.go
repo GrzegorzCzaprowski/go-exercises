@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"strconv"
 	"zadanka/go-exercises/client-server/client/commands"
 )
@@ -35,7 +36,10 @@ func adduser() commands.User {
 
 func choose(input1, input2, flagServerAddress string) {
 	var client commands.Client
-	userID, _ := strconv.ParseUint(input2, 10, 64)
+	userID, err := strconv.ParseUint(input2, 10, 64)
+	if err != nil {
+		log.Println("Error: can't parse string to integer!")
+	}
 
 	if input1 == "adduser" {
 		client.PostUser(adduser(), flagServerAddress)

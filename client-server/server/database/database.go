@@ -3,6 +3,7 @@ package database
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -25,7 +26,7 @@ type Database struct {
 
 func (db *Database) Set(w http.ResponseWriter, req *http.Request) {
 	var user User
-	_ = json.NewDecoder(req.Body).Decode(&user)
+	json.NewDecoder(req.Body).Decode(&user)
 	db.m.Lock()
 	db.Users[user.ID] = user
 	json.NewEncoder(w).Encode(db)
@@ -34,7 +35,10 @@ func (db *Database) Set(w http.ResponseWriter, req *http.Request) {
 
 func (db *Database) Delete(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	id, _ := strconv.ParseUint(params["id"], 0, 64)
+	id, err := strconv.ParseUint(params["id"], 0, 64)
+	if err != nil {
+		log.Println("Error: can't parse string to integer!")
+	}
 	db.m.Lock()
 	delete(db.Users, id)
 	json.NewEncoder(w).Encode(db.Users)
@@ -43,7 +47,10 @@ func (db *Database) Delete(w http.ResponseWriter, req *http.Request) {
 
 func (db *Database) Get(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	id, _ := strconv.ParseUint(params["id"], 0, 64)
+	id, err := strconv.ParseUint(params["id"], 0, 64)
+	if err != nil {
+		log.Println("Error: can't parse string to integer!")
+	}
 	db.m.Lock()
 	json.NewEncoder(w).Encode(db.Users[id])
 	db.m.Unlock()
@@ -52,7 +59,10 @@ func (db *Database) Get(w http.ResponseWriter, req *http.Request) {
 func (db *Database) SaveToFile(number int) {
 	for {
 		time.Sleep(time.Duration(number) * time.Second)
-		file, _ := json.MarshalIndent(db, "", " ")
-		_ = ioutil.WriteFile("database.json", file, 0644)
+		file, err := json.MarshalIndent(db, "", " ")
+		if err != nil {
+			log.Println("Error: can't save database to file!")
+		}
+		ioutil.WriteFile("database.json", file, 0644)
 	}
 }
