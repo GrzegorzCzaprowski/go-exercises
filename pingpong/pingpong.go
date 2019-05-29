@@ -6,22 +6,34 @@ import (
 	"time"
 )
 
-func main() {
-	channel := make(chan string)
-
-	rand.Seed(time.Now().UnixNano())
-
-	for {
-		go func() {
-			time.Sleep(time.Duration(rand.Intn(1000-100)+100) * time.Millisecond)
-			channel <- "ping"
-		}()
-		fmt.Println(<-channel)
-
-		go func() {
-			time.Sleep(time.Duration(rand.Intn(1000-100)+100) * time.Millisecond)
-			channel <- "pong"
-		}()
-		fmt.Println(<-channel)
+func pinger(c chan string) {
+	for i := 0; ; i++ {
+		c <- "ping"
 	}
+}
+
+func ponger(c chan string) {
+	for i := 0; ; i++ {
+		c <- "pong"
+	}
+}
+
+func printer(c chan string) {
+	for {
+		msg := <-c
+		fmt.Println(msg)
+		time.Sleep(time.Millisecond * time.Duration(100+rand.Intn(900)))
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	var c chan string = make(chan string)
+
+	go pinger(c)
+	go ponger(c)
+	go printer(c)
+
+	var input string
+	fmt.Scanln(&input)
 }
