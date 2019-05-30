@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"zadanka/go-exercises/client-server/server/database"
 
+	"github.com/GrzegorzCzaprowski/go-exercises/client-server/server/database"
 	"github.com/gorilla/mux"
 )
 
@@ -36,7 +36,7 @@ func main() {
 	if loadDatabase() {
 		data, err := ioutil.ReadFile("database.json")
 		if err != nil {
-			log.Println("Error: cant load database from file!")
+			log.Printf("%v\n", err)
 		}
 		db = &database.Database{}
 		json.Unmarshal([]byte(data), &db)
@@ -56,4 +56,5 @@ func main() {
 	go db.SaveToFile(flagSavingDatabaseInterval)
 
 	log.Fatal(http.ListenAndServe(flagServerAddress, router))
+
 }

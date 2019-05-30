@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"strconv"
-	"zadanka/go-exercises/client-server/client/commands"
+
+	"github.com/GrzegorzCzaprowski/go-exercises/client-server/client/commands"
 )
 
 func adduser() commands.User {
@@ -36,17 +36,17 @@ func adduser() commands.User {
 
 func choose(input1, input2, flagServerAddress string) {
 	var client commands.Client
-	userID, err := strconv.ParseUint(input2, 10, 64)
-	if err != nil {
-		log.Println("Error: can't parse string to integer!")
-	}
+
+	client.Address = flagServerAddress
+	client.ID, _ = strconv.ParseUint(input2, 10, 64)
 
 	if input1 == "adduser" {
-		client.PostUser(adduser(), flagServerAddress)
+		client.User = adduser()
+		client.PostUser()
 	} else if input1 == "delete" {
-		client.DeleteUser(userID, flagServerAddress)
+		client.DeleteUser()
 	} else if input1 == "getuser" {
-		client.GetUser(userID, flagServerAddress)
+		client.GetUser()
 	} else {
 		fmt.Println("bad command")
 	}

@@ -16,10 +16,14 @@ type User struct {
 	Email   string
 }
 
-type Client int
+type Client struct {
+	Address string
+	ID      uint64
+	User    User
+}
 
-func (c Client) DeleteUser(id uint64, address string) {
-	url := fmt.Sprintf("%s/users/%d/", address, id)
+func (c Client) DeleteUser() {
+	url := fmt.Sprintf("%s/users/%d/", c.Address, c.ID)
 
 	client := &http.Client{}
 
@@ -29,11 +33,11 @@ func (c Client) DeleteUser(id uint64, address string) {
 	defer response.Body.Close()
 }
 
-func (c Client) PostUser(user User, address string) {
+func (c Client) PostUser() {
 	var url string
-	url = fmt.Sprintf("%s/users/", address)
+	url = fmt.Sprintf("%s/users/", c.Address)
 
-	jsonValue, _ := json.Marshal(user)
+	jsonValue, _ := json.Marshal(c.User)
 	response, err := http.Post(url, "aplication/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		log.Fatalln(err)
@@ -46,8 +50,8 @@ func (c Client) PostUser(user User, address string) {
 	log.Println(string(body))
 }
 
-func (c Client) GetUser(id uint64, address string) {
-	url := fmt.Sprintf("%s/users/%d/", address, id)
+func (c Client) GetUser() {
+	url := fmt.Sprintf("%s/users/%d/", c.Address, c.ID)
 
 	response, _ := http.Get(url)
 
