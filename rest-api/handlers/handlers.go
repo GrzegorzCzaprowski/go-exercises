@@ -9,8 +9,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type Modeler interface {
+}
+
 type Handler struct {
-	S models.Server
+	M models.Model
 }
 
 func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
@@ -21,11 +24,11 @@ func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Par
 	}
 	defer req.Body.Close()
 
-	h.S.CreateTodo(todo)
+	h.M.CreateTodo(todo)
 }
 
 func (h Handler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	todos, err := h.S.ReadAllTodos()
+	todos, err := h.M.ReadAllTodos()
 	if err != nil {
 		log.Println("error with reading todos: ", err)
 	}

@@ -12,12 +12,12 @@ type Todo struct {
 	UpdatedAt   string `json:"updated_at,omitempty"`
 }
 
-type Server struct {
+type Model struct {
 	DB *sql.DB
 }
 
-func (server *Server) CreateTodo(todo *Todo) error {
-	result, err := server.DB.Exec("INSERT INTO todos(name, description) VALUES($1, $2)", todo.Name, todo.Description)
+func (model *Model) CreateTodo(todo *Todo) error {
+	result, err := model.DB.Exec("INSERT INTO todos(name, description) VALUES($1, $2)", todo.Name, todo.Description)
 	if err != nil {
 		return err
 	}
@@ -28,9 +28,9 @@ func (server *Server) CreateTodo(todo *Todo) error {
 	return err
 }
 
-func (server *Server) ReadAllTodos() ([]Todo, error) {
+func (model *Model) ReadAllTodos() ([]Todo, error) {
 	var todos []Todo
-	rows, err := server.DB.Query("SELECT id, name, description, created_at, updated_at FROM todos")
+	rows, err := model.DB.Query("SELECT id, name, description, created_at, updated_at FROM todos")
 	if err != nil {
 		return todos, err
 	}

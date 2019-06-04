@@ -21,10 +21,10 @@ func main() {
 
 	router := httprouter.New()
 
-	server := models.Server{DB: db}
+	server := models.Model{DB: db}
 
 	h := handlers.Handler{
-		S: server}
+		M: server}
 
 	router.POST("/api/todos/", h.Post)
 	router.GET("/api/todos/", h.GetAll)
