@@ -41,3 +41,30 @@ func (model Model) ReadAllTodos() ([]Todo, error) {
 	}
 	return todos, err
 }
+
+func (model Model) ReadById(id int) (Todo, error) {
+	todo := Todo{}
+	row := model.DB.QueryRow("SELECT id, name, description, created_at, updated_at FROM todos WHERE id=$1", id)
+
+	err := row.Scan(&todo.ID, &todo.Name, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
+	if err != nil {
+		return todo, err
+	}
+	return todo, err
+}
+
+func (model Model) UpdateById(todo Todo, id int) error {
+	_, err := model.DB.Exec("UPDATE todos SET name=$1, description=$2, updated_at = now() WHERE id=$3", todo.Name, todo.Description, id)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (model Model) RemoveById(id int) error {
+	_, err := model.DB.Exec("DELETE FROM todos WHERE id=$1", id)
+	if err != nil {
+		return err
+	}
+	return err
+}

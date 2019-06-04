@@ -25,9 +25,9 @@ func main() {
 
 	router.POST("/api/todos/", handler.Post)
 	router.GET("/api/todos/", handler.GetAll)
-	// router.HandleFunc("/api/todos/:id/", ReadByID).Methods("GET")
-	// router.HandleFunc("/api/todos/:id/", UpdateTodo).Methods("PATCH")
-	// router.HandleFunc("/api/todos/:id/", RemoveTodo).Methods("DELETE")
+	router.GET("/api/todos/:id/", handler.Get)
+	router.PATCH("/api/todos/:id/", handler.Patch)
+	router.DELETE("/api/todos/:id/", handler.Delete)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
