@@ -1,6 +1,3 @@
-//https://medium.com/@adigunhammedolalekan/build-and-deploy-a-secure-rest-api-with-go-postgresql-jwt-and-gorm-6fadf3da505b
-//https://golang.org/doc/effective_go.html
-
 package main
 
 import (
@@ -8,8 +5,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
 	"github.com/gorilla/mux"
+
+	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/handlers"
+	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
 	_ "github.com/lib/pq"
 )
 
@@ -21,15 +20,19 @@ func main() {
 	}
 	defer db.Close()
 
-	server := models.Server{DB: db}
-
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/todos/", server.CreateTodo).Methods("POST")
-	router.HandleFunc("/api/todos/", server.ReadAllTodos).Methods("GET")
+	server := models.Server{DB: db}
+
+	h := handlers.Handler{
+		S: server}
+
+	router.HandleFunc("/api/todos/", h.Post).Methods("POST")
+	router.HandleFunc("/api/todos/", h.GetAll).Methods("GET")
 	// router.HandleFunc("/api/todos/:id/", ReadByID).Methods("GET")
 	// router.HandleFunc("/api/todos/:id/", UpdateTodo).Methods("PATCH")
 	// router.HandleFunc("/api/todos/:id/", RemoveTodo).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
+
 }
