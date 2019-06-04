@@ -5,10 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/handlers"
 	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
+	"github.com/julienschmidt/httprouter"
 	_ "github.com/lib/pq"
 )
 
@@ -20,15 +19,15 @@ func main() {
 	}
 	defer db.Close()
 
-	router := mux.NewRouter()
+	router := httprouter.New()
 
 	server := models.Server{DB: db}
 
 	h := handlers.Handler{
 		S: server}
 
-	router.HandleFunc("/api/todos/", h.Post).Methods("POST")
-	router.HandleFunc("/api/todos/", h.GetAll).Methods("GET")
+	router.POST("/api/todos/", h.Post)
+	router.GET("/api/todos/", h.GetAll)
 	// router.HandleFunc("/api/todos/:id/", ReadByID).Methods("GET")
 	// router.HandleFunc("/api/todos/:id/", UpdateTodo).Methods("PATCH")
 	// router.HandleFunc("/api/todos/:id/", RemoveTodo).Methods("DELETE")
