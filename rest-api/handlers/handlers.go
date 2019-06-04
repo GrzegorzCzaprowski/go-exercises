@@ -15,31 +15,26 @@ type modeler interface {
 }
 
 type Handler struct {
-	m modeler
-}
-
-func New(m modeler) Handler {
-	return Handler{m: m}
+	M modeler
 }
 
 func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	todo := models.Todo{}
 	err := json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
-		log.Println("error with decoding to json: ", err)
+		log.Panicln("error with decoding to json: ", err)
 	}
-	defer req.Body.Close()
 
-	h.m.CreateTodo(todo)
+	h.M.CreateTodo(todo)
 }
 
 func (h Handler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	todos, err := h.m.ReadAllTodos()
+	todos, err := h.M.ReadAllTodos()
 	if err != nil {
-		log.Println("error with reading todos: ", err)
+		log.Panicln("error with reading todos: ", err)
 	}
 	err = json.NewEncoder(w).Encode(todos)
 	if err != nil {
-		log.Println("error with encoding to json: ", err)
+		log.Panicln("error with encoding to json: ", err)
 	}
 }

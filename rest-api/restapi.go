@@ -20,8 +20,8 @@ func main() {
 
 	router := httprouter.New()
 
-	mod := models.New(db)
-	handler := handlers.New(mod)
+	mod := models.Model{DB: db}
+	handler := handlers.Handler{M: mod}
 
 	router.POST("/api/todos/", handler.Post)
 	router.GET("/api/todos/", handler.GetAll)
