@@ -9,26 +9,32 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Modeler interface {
+type modeler interface {
+	CreateTodo(todo models.Todo) error
+	ReadAllTodos() ([]models.Todo, error)
 }
 
 type Handler struct {
-	M models.Model
+	m modeler
+}
+
+func New(m modeler) Handler {
+	return Handler{m: m}
 }
 
 func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	todo := &models.Todo{}
+	todo := models.Todo{}
 	err := json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
 		log.Println("error with decoding to json: ", err)
 	}
 	defer req.Body.Close()
 
-	h.M.CreateTodo(todo)
+	h.m.CreateTodo(todo)
 }
 
 func (h Handler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	todos, err := h.M.ReadAllTodos()
+	todos, err := h.m.ReadAllTodos()
 	if err != nil {
 		log.Println("error with reading todos: ", err)
 	}
