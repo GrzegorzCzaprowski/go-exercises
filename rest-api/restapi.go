@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"log"
 	"net/http"
 
@@ -12,7 +13,11 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("postgres", "postgres://testuser:testpass@localhost:5555/testdb?sslmode=disable")
+	var flagDatabaseAddress string
+	flag.StringVar(&flagDatabaseAddress, "db", "postgres://testuser:testpass@localhost:5555/testdb?sslmode=disable", "database address")
+	flag.Parse()
+
+	db, err := sql.Open("postgres", flagDatabaseAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
