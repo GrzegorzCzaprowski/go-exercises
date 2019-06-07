@@ -12,11 +12,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func main() {
-	var flagDatabaseAddress string
+var flagDatabaseAddress string
+
+func init() {
 	flag.StringVar(&flagDatabaseAddress, "db", "postgres://testuser:testpass@localhost:5555/testdb?sslmode=disable", "database address")
 	flag.Parse()
+}
 
+func main() {
 	db, err := sql.Open("postgres", flagDatabaseAddress)
 	if err != nil {
 		log.Fatal(err)

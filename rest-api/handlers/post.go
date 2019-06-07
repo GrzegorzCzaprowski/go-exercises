@@ -15,11 +15,13 @@ func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Par
 	todo := models.Todo{}
 	err := json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
-		log.Panicln("error with decoding to json: ", err)
+		log.Println("error with decoding to json: ", err)
+		return
 	}
 	err = verifications.CheckTodoContent(todo)
 	if err != nil {
-		log.Panicln("error with todo content: ", err)
+		log.Println("error with todo content: ", err)
+		return
 	}
 
 	h.M.CreateTodo(todo)

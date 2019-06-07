@@ -18,9 +18,6 @@ type Model struct {
 
 func (model Model) CreateTodo(todo Todo) error {
 	_, err := model.DB.Exec("INSERT INTO todos(name, description) VALUES($1, $2)", todo.Name, todo.Description)
-	if err != nil {
-		return err
-	}
 	return err
 }
 
@@ -35,11 +32,11 @@ func (model Model) ReadAllTodos() ([]Todo, error) {
 		todo := Todo{}
 		err := rows.Scan(&todo.ID, &todo.Name, &todo.Description, &todo.CreatedAt, &todo.UpdatedAt)
 		if err != nil {
-			return todos, rows.Err()
+			return todos, err
 		}
 		todos = append(todos, todo)
 	}
-	return todos, err
+	return todos, rows.Err()
 }
 
 func (model Model) ReadById(id int) (Todo, error) {

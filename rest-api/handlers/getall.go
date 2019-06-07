@@ -11,10 +11,10 @@ import (
 func (h Handler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	todos, err := h.M.ReadAllTodos()
 	if err != nil {
-		log.Panicln("error with reading todos: ", err)
+		log.Println("error with reading todos: ", err)
 	}
 	err = json.NewEncoder(w).Encode(todos)
 	if err != nil {
-		log.Panicln("error with encoding to json: ", err)
+		log.Println("error with encoding to json: ", err)
 	}
 }
