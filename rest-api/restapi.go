@@ -37,7 +37,7 @@ func main() {
 	router.PATCH("/api/todos/:id/", handler.Patch)
 	router.DELETE("/api/todos/:id/", handler.Delete)
 	router.POST("/api/user/create/", handler.PostUser)
-	//router.POST("/api/user/log", handler.LogUser)
+	router.POST("/api/user/log", handler.LogUser)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

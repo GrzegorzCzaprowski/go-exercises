@@ -11,6 +11,7 @@ type modeler interface {
 	UpdateById(todo models.Todo, id int) error
 	RemoveById(id int) error
 	CreateUser(user models.User) error
+	LogUser(user models.User) error
 }
 
 type Handler struct {
