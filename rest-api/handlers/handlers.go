@@ -10,6 +10,7 @@ type modeler interface {
 	ReadById(int) (models.Todo, error)
 	UpdateById(todo models.Todo, id int) error
 	RemoveById(id int) error
+	CreateUser(user models.User) error
 }
 
 type Handler struct {

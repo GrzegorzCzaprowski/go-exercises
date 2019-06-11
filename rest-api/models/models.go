@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 )
 
 type Todo struct {
@@ -12,8 +13,29 @@ type Todo struct {
 	UpdatedAt   string `json:"updated_at,omitempty"`
 }
 
+type User struct {
+	ID        int    `json:"id,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Password  string `json:"password,omitempty"`
+	CreatedAt string `json:"created_at,omitempty"`
+}
+
 type Model struct {
 	DB *sql.DB
+}
+
+func (model Model) CreateUser(user User) error {
+	//	sprawdzenie czu user jest juz w bazie
+	row := model.DB.QueryRow("SELECT email FROM users WHERE email=$1", user.Email)
+	var emailInDatabase string
+	row.Scan(&emailInDatabase)
+	if emailInDatabase == user.Email {
+		return errors.New("this email already exists in the user database!")
+	}
+
+	//ZAPOSTOWANIE DO BAZY
+	_, err := model.DB.Exec("INSERT INTO users(email, password) VALUES($1, $2)", user.Email, user.Password)
+	return err
 }
 
 func (model Model) CreateTodo(todo Todo) error {
