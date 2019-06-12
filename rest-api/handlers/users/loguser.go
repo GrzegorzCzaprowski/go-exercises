@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h Handler) LogUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (h UserHandler) LogUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	user := models.User{}
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {

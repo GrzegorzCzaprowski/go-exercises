@@ -11,7 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h Handler) Patch(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+func (h TodoHandler) Patch(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	id, err := strconv.Atoi(params.ByName("id"))
 	if err != nil {
 		log.Println("cant parse paramater to int: ", err)

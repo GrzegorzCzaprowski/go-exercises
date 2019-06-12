@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h Handler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (h TodoHandler) GetAll(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	todos, err := h.M.ReadAllTodos()
 	if err != nil {
 		log.Println("error with reading todos: ", err)

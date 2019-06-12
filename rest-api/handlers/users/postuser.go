@@ -15,7 +15,7 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func (h Handler) PostUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (h UserHandler) PostUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	user := models.User{}
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {

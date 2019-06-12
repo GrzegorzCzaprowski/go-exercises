@@ -11,7 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h Handler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (h TodoHandler) Post(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	todo := models.Todo{}
 	err := json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
