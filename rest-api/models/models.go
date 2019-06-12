@@ -33,7 +33,7 @@ func (model Model) LogUser(user User) error {
 	fmt.Println(user.Password)
 	fmt.Println(user.CreatedAt)
 	if err != nil {
-		fmt.Println("nie ma takiego usera w bazie")
+		fmt.Println("this user dont exists!")
 		return err
 	}
 	return err

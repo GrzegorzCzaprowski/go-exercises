@@ -9,16 +9,16 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (h Handler) PostUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+func (h Handler) LogUser(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	user := models.User{}
 	err := json.NewDecoder(req.Body).Decode(&user)
 	if err != nil {
 		log.Println("error with decoding user to json: ", err)
 		return
 	}
-	err = h.M.CreateUser(user)
+	err = h.M.LogUser(user)
 	if err != nil {
-		log.Println("error with creating user: ", err)
+		log.Println("error with logging user: ", err)
 		return
 	}
 }
