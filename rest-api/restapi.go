@@ -6,7 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/handlers"
+	todos "github.com/GrzegorzCzaprowski/go-exercises/rest-api/handlers/todos"
+	users "github.com/GrzegorzCzaprowski/go-exercises/rest-api/handlers/users"
 	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/lib/pq"
@@ -29,15 +30,16 @@ func main() {
 	router := httprouter.New()
 
 	mod := models.Model{DB: db}
-	handler := handlers.Handler{M: mod}
+	todoHandler := todos.TodoHandler{M: mod}
+	userHandler := users.UserHandler{M: mod}
 
-	router.POST("/api/todos/", handler.Post)
-	router.GET("/api/todos/", handler.GetAll)
-	router.GET("/api/todos/:id/", handler.Get)
-	router.PATCH("/api/todos/:id/", handler.Patch)
-	router.DELETE("/api/todos/:id/", handler.Delete)
-	router.POST("/api/user/create/", handler.PostUser)
-	router.POST("/api/user/log", handler.LogUser)
+	router.POST("/api/todos/", todoHandler.Post)
+	router.GET("/api/todos/", todoHandler.GetAll)
+	router.GET("/api/todos/:id/", todoHandler.Get)
+	router.PATCH("/api/todos/:id/", todoHandler.Patch)
+	router.DELETE("/api/todos/:id/", todoHandler.Delete)
+	router.POST("/api/user/create/", userHandler.PostUser)
+	router.POST("/api/user/log", userHandler.LogUser)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

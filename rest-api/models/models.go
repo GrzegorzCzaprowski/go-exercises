@@ -2,8 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
+
+	"github.com/lib/pq"
 )
 
 type Todo struct {
@@ -25,6 +26,11 @@ type Model struct {
 	DB *sql.DB
 }
 
+// func CheckPasswordHash(password, hash string) bool {
+// 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+// 	return err == nil
+// }
+
 func (model Model) LogUser(user User) error {
 	row := model.DB.QueryRow("SELECT id, email, password, created_at FROM users WHERE email=$1 and password=$2", user.Email, user.Password)
 	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt)
@@ -40,16 +46,12 @@ func (model Model) LogUser(user User) error {
 }
 
 func (model Model) CreateUser(user User) error {
-	//	sprawdzenie czu user jest juz w bazie
-	row := model.DB.QueryRow("SELECT email FROM users WHERE email=$1", user.Email)
-	var emailInDatabase string
-	row.Scan(&emailInDatabase)
-	if emailInDatabase == user.Email {
-		return errors.New("this email already exists in the user database!")
-	}
-
-	//ZAPOSTOWANIE DO BAZY
 	_, err := model.DB.Exec("INSERT INTO users(email, password) VALUES($1, $2)", user.Email, user.Password)
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code == "23505" {
+			return err
+		}
+	}
 	return err
 }
 
