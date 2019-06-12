@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/lib/pq"
 )
@@ -34,12 +33,7 @@ type Model struct {
 func (model Model) LogUser(user User) error {
 	row := model.DB.QueryRow("SELECT id, email, password, created_at FROM users WHERE email=$1 and password=$2", user.Email, user.Password)
 	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt)
-	fmt.Println(user.ID)
-	fmt.Println(user.Email)
-	fmt.Println(user.Password)
-	fmt.Println(user.CreatedAt)
 	if err != nil {
-		fmt.Println("this user dont exists!")
 		return err
 	}
 	return err
