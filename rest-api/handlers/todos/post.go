@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/verifications"
-
 	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,13 +14,21 @@ func (h TodoHandler) Post(w http.ResponseWriter, req *http.Request, _ httprouter
 	err := json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
 		log.Println("error with decoding to json: ", err)
-		return
-	}
-	err = verifications.CheckTodoContent(todo)
-	if err != nil {
-		log.Println("error with todo content: ", err)
+		w.WriteHeader(500)
 		return
 	}
 
-	h.M.CreateTodo(todo)
+	todo, err = h.M.CreateTodo(todo)
+	if err != nil {
+		log.Println("error with creating todo: ", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		log.Println("error with encoding to json: ", err)
+		w.WriteHeader(500)
+		return
+	}
 }

@@ -15,18 +15,19 @@ func (h UserHandler) LogUser(w http.ResponseWriter, req *http.Request, _ httprou
 	if err != nil {
 		log.Println("error with decoding user to json: ", err)
 		w.WriteHeader(500)
-		json.NewEncoder(w).Encode(user)
 		return
 	}
 	user, err = h.M.LogUser(user)
 	if err != nil {
 		log.Println("error with logging user: ", err)
 		w.WriteHeader(500)
-		json.NewEncoder(w).Encode(user)
 		return
-	} else {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(user)
 	}
 
+	err = json.NewEncoder(w).Encode(user)
+	if err != nil {
+		log.Println("error with encoding to json: ", err)
+		w.WriteHeader(500)
+		return
+	}
 }

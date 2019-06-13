@@ -12,9 +12,14 @@ func (h TodoHandler) GetAll(w http.ResponseWriter, req *http.Request, _ httprout
 	todos, err := h.M.ReadAllTodos()
 	if err != nil {
 		log.Println("error with reading todos: ", err)
+		w.WriteHeader(500)
+		return
 	}
+
 	err = json.NewEncoder(w).Encode(todos)
 	if err != nil {
 		log.Println("error with encoding to json: ", err)
+		w.WriteHeader(500)
+		return
 	}
 }

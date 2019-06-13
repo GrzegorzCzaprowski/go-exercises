@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/models"
-	"github.com/GrzegorzCzaprowski/go-exercises/rest-api/verifications"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -15,6 +14,7 @@ func (h TodoHandler) Patch(w http.ResponseWriter, req *http.Request, params http
 	id, err := strconv.Atoi(params.ByName("id"))
 	if err != nil {
 		log.Println("cant parse paramater to int: ", err)
+		w.WriteHeader(500)
 		return
 	}
 
@@ -22,18 +22,21 @@ func (h TodoHandler) Patch(w http.ResponseWriter, req *http.Request, params http
 	err = json.NewDecoder(req.Body).Decode(&todo)
 	if err != nil {
 		log.Println("error with decoding to json: ", err)
+		w.WriteHeader(500)
 		return
 	}
 
-	err = verifications.CheckTodoContent(todo)
-	if err != nil {
-		log.Println("error with todo content: ", err)
-		return
-	}
-
-	err = h.M.UpdateById(todo, id)
+	todo, err = h.M.UpdateById(todo, id)
 	if err != nil {
 		log.Println("error with updating todo: ", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		log.Println("error with encoding to json: ", err)
+		w.WriteHeader(500)
 		return
 	}
 }
