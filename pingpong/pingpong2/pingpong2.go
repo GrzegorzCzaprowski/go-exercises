@@ -8,8 +8,8 @@ import (
 )
 
 func ping(channel chan string) {
-	i := <-channel
-	fmt.Println(i)
+	time.Sleep(time.Millisecond * time.Duration(100+rand.Intn(900)))
+	fmt.Println(<-channel)
 	channel <- "ping"
 	wg.Done()
 }
@@ -27,7 +27,6 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	channel := make(chan string)
 	for {
-		time.Sleep(time.Millisecond * time.Duration(100+rand.Intn(900)))
 		wg.Add(2)
 		go ping(channel)
 		go pong(channel)
